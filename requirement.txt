@@ -1,2 +1,0 @@
-tavily==1.9.0
-Weather
