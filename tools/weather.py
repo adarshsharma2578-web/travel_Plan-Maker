@@ -1,3 +1,4 @@
+# show the weather codition in the city
 import os
 import requests
 from dotenv import laod_dotenv
