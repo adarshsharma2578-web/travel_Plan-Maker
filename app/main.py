@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-
 from tools.weather import router as weather_router
-from tools.tavily import router as search_router
+from tools.searchAgent import router as search_router
 from tools.FLIGHT_Search import router as flight_router
 
 
