@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from tools.weather import router as weather_router
-from tools.searchAgent import router as search_router
-from tools.FLIGHT_Search import router as flight_router
-
+from routers.weather import router as weather_router
+from routers.searchAgent import router as search_router
+from routers.FLIGHT_Search import router as FLIGHT_router
 
 load_dotenv()
 
@@ -29,7 +28,7 @@ app.add_middleware(
 
 app.include_router(weather_router)
 app.include_router(search_router)
-app.include_router(flight_router)
+app.include_router(FLIGHT_router)
 
 
 
