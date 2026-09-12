@@ -1,295 +1,362 @@
-import { useState } from 'react'
-import './index.css'
 
-const API_BASE = '/api'
+import { useState } from "react";
+import Login from "./login.jsx";
+import Register from "./Register";
+import "./App.css";
+
+const API_BASE_URL = "http://127.0.0.1:8000";
 
 function App() {
-  const [formData, setFormData] = useState({
-    destination: '',
-    date: '',
-    days: 3,
-    budget: 'Medium',
-  })
+  const [page, setPage] = useState("home");
 
-  const [tripResult, setTripResult] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [city, setCity] = useState("");
+  const [destination, setDestination] = useState("");
+  const [query, setQuery] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const [weather, setWeather] = useState(null);
+  const [flights, setFlights] = useState(null);
+  const [searchResult, setSearchResult] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    setTripResult(null)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // ---------------- WEATHER ----------------
+  const getWeather = async () => {
+    if (!city.trim()) {
+      setError("Please enter a city.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setWeather(null);
 
     try {
-      const response = await fetch(`${API_BASE}/generate-trip`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
+      const response = await fetch(
+        `${API_BASE_URL}/api/weather?city=${encodeURIComponent(city)}`
+      );  
 
-      const data = await response.json()
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.detail || 'Something went wrong. Please try again.')
+      if (!response.ok) {
+        throw new Error(`Weather request failed: ${response.status}`);
       }
 
-      setTripResult(data)
+      const data = await response.json();
+      setWeather(data);
     } catch (err) {
-      setError(err.message || 'Could not reach the server. Make sure the backend is running on port 8000.')
+      console.error("Weather Error:", err);
+      setError(
+        "Unable to get weather. Make sure FastAPI is running and the weather endpoint is correct."
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
+  };
+
+  // ---------------- FLIGHTS ----------------
+  const searchFlights = async () => {
+    if (!destination.trim()) {
+      setError("Please enter a destination.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setFlights(null);
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/flights?destination=${encodeURIComponent(
+          destination
+        )}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Flight request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setFlights(data);
+    } catch (err) {
+      console.error("Flight Error:", err);
+      setError(
+        "Unable to search flights. Make sure FastAPI is running and the flight endpoint is correct."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---------------- TRAVEL SEARCH ----------------
+  const searchTravel = async () => {
+    if (!query.trim()) {
+      setError("Please enter something to search.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setSearchResult(null);
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/search?query=${encodeURIComponent(query)}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Search request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setSearchResult(data);
+    } catch (err) {
+      console.error("Search Error:", err);
+      setError(
+        "Unable to search travel information. Make sure FastAPI is running."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---------------- LOGIN ----------------
+  if (page === "login") {
+    return (
+      <Login
+        onLoginSuccess={() => setPage("home")}
+        goToRegister={() => setPage("register")}
+        goHome={() => setPage("home")}
+      />
+    );
   }
 
+  // ---------------- REGISTER ----------------
+  if (page === "register") {
+    return (
+      <Register
+        goToLogin={() => setPage("login")}
+        goHome={() => setPage("home")}
+      />
+    );
+  }
+
+  // ---------------- HOME ----------------
   return (
     <div className="app">
-      {/* ---------------- NAVBAR ---------------- */}
-      <nav
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '18px 40px',
-          position: 'sticky',
-          top: 0,
-          background: 'rgba(2,6,23,0.85)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
-          zIndex: 100,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 800, fontSize: '20px' }}>
-          <span style={{ fontSize: '24px' }}>✈️</span> Trip Plan Maker
-        </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button
-            type="button"
-            className="secondary"
-            style={{ padding: '10px 20px', fontSize: '14px' }}
-            onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-          >
-            Features
+      {/* NAVBAR */}
+      <nav className="navbar">
+        <div className="logo">✈️ Travel Plan Maker</div>
+
+        <div className="nav-buttons">
+          <button onClick={() => setPage("home")}>Home</button>
+
+          <button onClick={() => setPage("login")}>
+            Login
           </button>
+
           <button
-            type="button"
-            style={{ padding: '10px 20px', fontSize: '14px' }}
-            onClick={() => document.getElementById('trip-form')?.scrollIntoView({ behavior: 'smooth' })}
+            className="register-btn"
+            onClick={() => setPage("register")}
           >
-            Plan a Trip
+            Register
           </button>
         </div>
       </nav>
 
-      {/* ---------------- HERO ---------------- */}
-      <section className="hero">
-        <h1>Plan Your Perfect Trip with AI</h1>
-        <p style={{ maxWidth: 700, margin: '20px auto', fontSize: '18px', lineHeight: 1.7, color: '#CBD5E1' }}>
-          Generate personalized itineraries, discover top attractions, get budget estimates,
-          and check weather — all in one place. Powered by real-time web search.
-        </p>
-        <div className="buttons">
-          <button type="button" onClick={() => document.getElementById('trip-form')?.scrollIntoView({ behavior: 'smooth' })}>
-            Get Started 🚀
-          </button>
-          <button type="button" className="secondary" onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}>
-            Learn More
-          </button>
-        </div>
-      </section>
-      {/* ---------------- HERO ---------------- */}
-<section className="hero">
-  <h1>Plan Your Perfect Trip with AI</h1>
+      <main>
+        {/* HERO */}
+        <section className="hero">
+          <div className="hero-content">
+            <p className="tag">AI POWERED TRAVEL PLANNER</p>
 
-  <p
-    style={{
-      maxWidth: 700,
-      margin: '20px auto',
-      fontSize: '18px',
-      lineHeight: 1.7,
-      color: '#CBD5E1',
-    }}
-  >
-    Generate personalized itineraries, discover top attractions,
-    get budget estimates, and check weather — all in one place.
-    Powered by real-time web search.
-  </p>
+            <h1>
+              Plan Your Perfect
+              <span> Journey</span>
+            </h1>
 
-  <div className="buttons">
-    <button
-      type="button"
-      onClick={() =>
-        document.getElementById('trip-form')?.scrollIntoView({
-          behavior: 'smooth',
-        })
-      }
-    >
-      Get Started 🚀
-    </button>
-
-    <button
-      type="button"
-      className="secondary"
-      onClick={() =>
-        document.getElementById('features')?.scrollIntoView({
-          behavior: 'smooth',
-        })
-      }
-    >
-      Learn More
-    </button>
-  </div>
-
-  {/* 👇 Add Stats Here */}
-  <div className="stats">
-    <div>
-      <h2>100+</h2>
-      <p>Destinations</p>
-    </div>
-
-    <div>
-      <h2>AI</h2>
-      <p>Personalized Plans</p>
-    </div>
-
-    <div>
-      <h2>24/7</h2>
-      <p>Available</p>
-    </div>
-  </div>
-</section>
-
-      {/* ---------------- FEATURES ---------------- */}
-      <section id="features" className="features">
-        <div className="card">
-          <h2>🧭 AI Itineraries</h2>
-          <p>Day-by-day travel plans tailored to your destination, duration, and budget.</p>
-        </div>
-        <div className="card">
-          <h2>🌤️ Weather Forecasts</h2>
-          <p>Know the conditions before you go with live weather data for any city.</p>
-        </div>
-        <div className="card">
-          <h2>🔍 Real-time Search</h2>
-          <p>Fresh recommendations pulled from the web — not stale static content.</p>
-        </div>
-        <div className="card">
-          <h2>💰 Budget Planning</h2>
-          <p>Choose your spending style and get suggestions that fit your wallet.</p>
-        </div>
-      </section>
-
-      {/* ---------------- TRIP FORM ---------------- */}
-      <section id="trip-form" className="trip-form">
-        <h2>🌍 Plan Your Trip</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="destination"
-            placeholder="Destination (e.g. Tokyo, Paris, Bali)"
-            value={formData.destination}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-          />
-          <select name="days" value={formData.days} onChange={handleChange}>
-            <option value={1}>1 day</option>
-            <option value={2}>2 days</option>
-            <option value={3}>3 days</option>
-            <option value={5}>5 days</option>
-            <option value={7}>7 days</option>
-            <option value={10}>10 days</option>
-            <option value={14}>14 days</option>
-          </select>
-          <select name="budget" value={formData.budget} onChange={handleChange}>
-            <option value="Budget">Budget 💸</option>
-            <option value="Medium">Medium 💰</option>
-            <option value="Luxury">Luxury ✨</option>
-          </select>
-          <section
-></section>
-
-          <button type="submit" disabled={loading}>
-            {loading ? 'Generating itinerary... ⏳' : 'Generate Itinerary ✨'}
-          </button>
-        </form>
-
-        {error && (
-          <div
-            style={{
-              marginTop: '25px',
-              padding: '18px',
-              background: 'rgba(239,68,68,0.15)',
-              border: '1px solid rgba(239,68,68,0.4)',
-              borderRadius: '12px',
-              color: '#FCA5A5',
-            }}
-          >
-            ⚠️ {error}
-          </div>
-        )}
-
-        {tripResult && (
-          <div
-            style={{
-              marginTop: '35px',
-              padding: '24px',
-              background: 'rgba(255,255,255,0.06)',
-              borderRadius: '14px',
-              border: '1px solid rgba(255,255,255,0.12)',
-              textAlign: 'left',
-            }}
-          >
-            <h3 style={{ color: '#38BDF8', marginBottom: '16px', fontSize: '22px' }}>
-              ✈️ Your AI Travel Itinerary for {tripResult.destination}
-            </h3>
-            <p style={{ whiteSpace: 'pre-line', lineHeight: 1.8, color: '#CBD5E1' }}>
-              {tripResult.answer}
+            <p>
+              Search destinations, check weather, explore flights
+              and discover travel information in one place.
             </p>
 
-            {tripResult.plan && tripResult.plan.length > 0 && (
-              <div style={{ marginTop: '24px' }}>
-                <h4 style={{ color: '#F59E0B', marginBottom: '12px', fontSize: '18px' }}>
-                  📚 Recommended Sources
-                </h4>
-                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {tripResult.plan.map((item, idx) => (
-                    <li key={idx}>
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: '#38BDF8', textDecoration: 'none' }}
-                      >
-                        {item.title || item.url}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <button
+              className="hero-btn"
+              onClick={() =>
+                document
+                  .getElementById("planner")
+                  .scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              Start Planning →
+            </button>
           </div>
-        )}
-      </section>
-    
-      {/* ---------------- FOOTER ---------------- */}
+        </section>
+
+        {/* PLANNER */}
+        <section id="planner" className="planner-section">
+          <h2>Travel Planner</h2>
+
+          <p className="section-subtitle">
+            Everything you need to plan your trip
+          </p>
+
+          {error && <div className="error">{error}</div>}
+
+          <div className="planner-grid">
+            {/* WEATHER */}
+            <div className="card">
+              <div className="card-icon">🌦️</div>
+
+              <h3>Weather</h3>
+
+              <p>
+                Check the current weather at your destination.
+              </p>
+
+              <input
+                type="text"
+                placeholder="Enter city"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+              />
+
+              <button onClick={getWeather}>
+                Check Weather
+              </button>
+
+              {weather && (
+                <div className="result">
+                  <h4>Weather Result</h4>
+
+                  <pre>
+                    {JSON.stringify(weather, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+
+            {/* FLIGHTS */}
+            <div className="card">
+              <div className="card-icon">✈️</div>
+
+              <h3>Flight Search</h3>
+
+              <p>
+                Find flight information for your destination.
+              </p>
+
+              <input
+                type="text"
+                placeholder="Enter destination"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+              />
+
+              <button onClick={searchFlights}>
+                Search Flights
+              </button>
+
+              {flights && (
+                <div className="result">
+                  <h4>Flight Result</h4>
+
+                  <pre>
+                    {JSON.stringify(flights, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+
+            {/* TRAVEL SEARCH */}
+            <div className="card">
+              <div className="card-icon">🔎</div>
+
+              <h3>Travel Search</h3>
+
+              <p>
+                Search for hotels, attractions and travel
+                information.
+              </p>
+
+              <input
+                type="text"
+                placeholder="e.g. Best places in Jaipur"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+
+              <button onClick={searchTravel}>
+                Search
+              </button>
+
+              {searchResult && (
+                <div className="result">
+                  <h4>Search Result</h4>
+
+                  <pre>
+                    {JSON.stringify(searchResult, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* LOADING */}
+          {loading && (
+            <div className="loading">
+              Loading...
+            </div>
+          )}
+        </section>
+
+        {/* FEATURES */}
+        <section className="features">
+          <h2>Why Travel Plan Maker?</h2>
+
+          <div className="feature-grid">
+            <div>
+              <span>🤖</span>
+              <h3>AI Powered</h3>
+              <p>
+                Intelligent travel assistance using AI agents.
+              </p>
+            </div>
+
+            <div>
+              <span>💰</span>
+              <h3>Budget Friendly</h3>
+              <p>
+                Plan your trip according to your budget.
+              </p>
+            </div>
+
+            <div>
+              <span>📍</span>
+              <h3>Smart Planning</h3>
+              <p>
+                Get useful information about your destination.
+              </p>
+            </div>
+
+            <div>
+              <span>🔐</span>
+              <h3>Secure</h3>
+              <p>
+                User authentication with JWT.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* FOOTER */}
       <footer>
-        © {new Date().getFullYear()} Trip Plan Maker · Powered by React, Vite &amp; FastAPI
+        <p>
+          © 2026 Travel Plan Maker | AI Travel Assistant
+        </p>
       </footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
 
