@@ -1,3 +1,7 @@
+from fastapi import APIRouter
+
+router = APIRouter()
+
 def calculate_budget(
     total_budget: float,
     transport: float,
