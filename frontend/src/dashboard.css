@@ -1,0 +1,158 @@
+.dashboard {
+  min-height: 100vh;
+  display: flex;
+  background: #f5f7fa;
+}
+
+.dashboard-sidebar {
+  width: 250px;
+  min-height: 100vh;
+  background: #101828;
+  color: white;
+  padding: 28px 18px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-logo {
+  font-size: 23px;
+  font-weight: 800;
+  padding: 0 12px 35px;
+}
+
+.dashboard-logo span {
+  color: #42a5ff;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.sidebar-menu button,
+.logout-button {
+  border: none;
+  background: transparent;
+  color: #b9c2d0;
+  text-align: left;
+  padding: 14px;
+  border-radius: 9px;
+  font-size: 15px;
+}
+
+.sidebar-menu button:hover,
+.sidebar-menu button.active {
+  background: #1d2939;
+  color: white;
+}
+
+.logout-button {
+  margin-top: auto;
+}
+
+.dashboard-main {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+}
+
+.dashboard-header {
+  background: white;
+  padding: 25px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+}
+
+.dashboard-header p {
+  font-size: 11px;
+  color: #888;
+  letter-spacing: 2px;
+}
+
+.dashboard-header h2 {
+  margin-top: 5px;
+}
+
+.header-avatar,
+.profile-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: #1683ff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.dashboard-content {
+  padding: 35px 40px;
+}
+
+.profile-simple {
+  max-width: 600px;
+  background: white;
+  padding: 40px;
+  border-radius: 18px;
+  text-align: center;
+}
+
+.profile-simple .profile-avatar {
+  margin: auto;
+  width: 80px;
+  height: 80px;
+  font-size: 30px;
+}
+
+.profile-simple p {
+  color: #777;
+  margin: 10px;
+}
+
+.profile-simple button {
+  background: #1683ff;
+  border: none;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 8px;
+}
+
+@media (max-width: 700px) {
+  .dashboard-sidebar {
+    width: 70px;
+  }
+
+  .dashboard-logo {
+    font-size: 0;
+  }
+
+  .dashboard-logo:first-letter {
+    font-size: 23px;
+  }
+
+  .sidebar-menu button {
+    font-size: 0;
+    text-align: center;
+  }
+
+  .logout-button {
+    font-size: 0;
+    text-align: center;
+  }
+
+  .dashboard-main {
+    margin-left: 70px;
+    width: calc(100% - 70px);
+  }
+
+  .dashboard-content {
+    padding: 20px;
+  }
+}
