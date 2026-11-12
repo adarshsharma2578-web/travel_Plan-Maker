@@ -1,0 +1,140 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: white;
+}
+
+.login-image {
+  background-image:
+    linear-gradient(rgba(0, 30, 60, .5), rgba(0, 30, 60, .5)),
+    url("https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=85");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  padding: 12%;
+  color: white;
+}
+
+.login-image-content span {
+  font-size: 40px;
+}
+
+.login-image-content h1 {
+  font-size: 55px;
+  line-height: 1.05;
+  margin: 20px 0;
+}
+
+.login-image-content p {
+  font-size: 18px;
+  color: #e0e8f0;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  padding: 40px 10%;
+}
+
+.back-home {
+  width: fit-content;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.login-box {
+  max-width: 440px;
+  width: 100%;
+  margin: auto;
+}
+
+.login-logo {
+  font-size: 25px;
+  font-weight: 800;
+  color: #172033;
+}
+
+.login-logo span {
+  color: #1687ff;
+}
+
+.login-box h2 {
+  font-size: 38px;
+  margin-top: 45px;
+}
+
+.login-subtitle {
+  color: #7a8798;
+  margin: 10px 0 30px;
+}
+
+.login-box label {
+  display: block;
+  font-weight: 600;
+  margin: 18px 0 8px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #dce3eb;
+  border-radius: 10px;
+  outline: none;
+  font-size: 15px;
+}
+
+.login-box input:focus {
+  border-color: #1687ff;
+}
+
+.login-submit {
+  width: 100%;
+  padding: 15px;
+  margin-top: 25px;
+  border: none;
+  border-radius: 10px;
+  background: #1687ff;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.login-error {
+  padding: 12px;
+  border-radius: 8px;
+  background: #fff0f0;
+  color: #d33;
+  margin-bottom: 15px;
+}
+
+.register-text {
+  text-align: center;
+  margin-top: 25px;
+  color: #718096;
+}
+
+.register-text button {
+  border: none;
+  background: transparent;
+  color: #1687ff;
+  font-weight: 700;
+  margin-left: 5px;
+}
+
+@media (max-width: 800px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .login-image {
+    display: none;
+  }
+
+  .login-container {
+    padding: 30px;
+  }
+}
