@@ -1,18 +1,15 @@
-import os
 
 from groq import Groq
-from dotenv import load_dotenv
 from fastapi import APIRouter
+from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
 router = APIRouter()
 
-
 def search_query(query: str) -> dict:
-    """
-    Takes a user query string and generates a response using Groq.
-    """
+    """Take a user query and generate a response."""
 
     api_key = os.getenv("GROQ_API_KEY")
 
